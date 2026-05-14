@@ -123,7 +123,7 @@ def load_demo_1():
     st.session_state.exercise_angina = "Y"
     st.session_state.oldpeak = 2.5
 
-def load_demo_2():
+def load_demo_3():
     st.session_state.age = 40
     st.session_state.sex = "F"
     st.session_state.chest_pain = "ATA"
@@ -134,7 +134,7 @@ def load_demo_2():
     st.session_state.exercise_angina = "N"
     st.session_state.oldpeak = 0.0
 
-def load_demo_3():
+def load_demo_2():
     st.session_state.age = 55
     st.session_state.sex = "M"
     st.session_state.chest_pain = "NAP"
@@ -151,8 +151,8 @@ with col2:
     st.subheader("Demo Data", anchor=False)
     st.write("Load realistic patient profiles:")
     st.button("Demo 1: High Risk Profile", on_click=load_demo_1, use_container_width=True)
-    st.button("Demo 2: Low Risk Profile", on_click=load_demo_2, use_container_width=True)
-    st.button("Demo 3: Moderate Risk Profile", on_click=load_demo_3, use_container_width=True)
+    st.button("Demo 2: Moderate Risk Profile", on_click=load_demo_2, use_container_width=True)
+    st.button("Demo 3: Low Risk Profile", on_click=load_demo_3, use_container_width=True)
 
 with col1:
     st.subheader("Patient Details", anchor=False)
