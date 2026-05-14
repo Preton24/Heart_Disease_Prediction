@@ -5,6 +5,43 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 
+st.set_page_config(page_title="Heart Disease Prediction", page_icon="❤️", layout="wide")
+
+st.markdown("""
+<style>
+    /* App background */
+    .stApp {
+        background-color: #f8f9fa;
+    }
+    /* Custom button styling */
+    div.stButton > button:first-child {
+        background-color: #e74c3c;
+        color: white;
+        border-radius: 8px;
+        transition: all 0.3s;
+        border: none;
+        font-weight: 600;
+    }
+    div.stButton > button:first-child:hover {
+        background-color: #c0392b;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transform: translateY(-2px);
+    }
+    /* Headers */
+    h1, h2, h3 {
+        color: #2c3e50;
+    }
+    /* Cards */
+    div[data-testid="stVerticalBlock"] > div[style*="flex-direction: column;"] > div[data-testid="stVerticalBlock"] {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    }
+</style>
+""", unsafe_allow_html=True)
+
+
 # -----------------------------------
 # Load Dataset
 # -----------------------------------
@@ -40,9 +77,10 @@ model.fit(X, y)
 # Streamlit UI
 # -----------------------------------
 
-st.title("Heart Disease Prediction System", anchor=False)
+st.title("❤️ Heart Disease Prediction System", anchor=False)
 
-st.write("HCAI-Based Healthcare Prediction for SDG 3")
+st.markdown("<p style='font-size: 1.2rem; color: #7f8c8d; font-weight: 500;'>HCAI-Based Healthcare Prediction for SDG 3</p>", unsafe_allow_html=True)
+st.markdown("---")
 
 # -----------------------------------
 # User Inputs Setup
@@ -95,15 +133,21 @@ with col2:
     st.button("Demo 2: Low Risk Profile", on_click=load_demo_2, use_container_width=True)
 
 with col1:
-    age = st.number_input("Age", 1, 100, key="age")
-    sex = st.selectbox("Sex", ["M", "F"], key="sex")
-    chest_pain = st.selectbox("Chest Pain Type", ["ATA", "NAP", "ASY", "TA"], key="chest_pain")
-    resting_bp = st.number_input("Resting Blood Pressure", 50, 250, key="resting_bp")
-    cholesterol = st.number_input("Cholesterol", 50, 700, key="cholesterol")
-    fasting_bs = st.selectbox("Fasting Blood Sugar", [0, 1], key="fasting_bs")
-    max_hr = st.number_input("Maximum Heart Rate", 60, 250, key="max_hr")
-    exercise_angina = st.selectbox("Exercise Angina", ["Y", "N"], key="exercise_angina")
-    oldpeak = st.number_input("Oldpeak", 0.0, 10.0, key="oldpeak")
+    st.subheader("Patient Details", anchor=False)
+    # Use nested columns to make it look better
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        age = st.number_input("Age", 1, 100, key="age")
+        resting_bp = st.number_input("Resting Blood Pressure", 50, 250, key="resting_bp")
+        max_hr = st.number_input("Maximum Heart Rate", 60, 250, key="max_hr")
+    with c2:
+        sex = st.selectbox("Sex", ["M", "F"], key="sex")
+        cholesterol = st.number_input("Cholesterol", 50, 700, key="cholesterol")
+        exercise_angina = st.selectbox("Exercise Angina", ["Y", "N"], key="exercise_angina")
+    with c3:
+        chest_pain = st.selectbox("Chest Pain Type", ["ATA", "NAP", "ASY", "TA"], key="chest_pain")
+        fasting_bs = st.selectbox("Fasting Blood Sugar", [0, 1], key="fasting_bs")
+        oldpeak = st.number_input("Oldpeak", 0.0, 10.0, key="oldpeak")
 
 # -----------------------------------
 # Encode Inputs
@@ -150,19 +194,24 @@ if st.button("Predict"):
     probabilities = model.predict_proba(input_data)
     risk_prob = probabilities[0][1]
 
+    st.markdown("---")
     st.subheader("Prediction Results", anchor=False)
 
-    if prediction[0] == 1:
-        st.error("⚠️ Heart Disease Detected")
-    else:
-        st.success("✅ No Heart Disease Detected")
+    res_col1, res_col2 = st.columns(2)
 
-    st.write(f"**Risk Probability:** {risk_prob * 100:.1f}%")
+    with res_col1:
+        if prediction[0] == 1:
+            st.error("### ⚠️ High Risk of Heart Disease")
+        else:
+            st.success("### ✅ Low Risk of Heart Disease")
+        
+        st.metric(label="Risk Probability", value=f"{risk_prob * 100:.1f}%")
 
-    st.subheader("Risk Assessment", anchor=False)
-    if risk_prob < 0.3:
-        st.info("🟢 **Low Risk**: No immediate concern. Keep maintaining a healthy lifestyle!")
-    elif risk_prob < 0.7:
-        st.warning("🟡 **Moderate Risk**: You have some risk factors. Consider consulting a doctor for a routine checkup.")
-    else:
-        st.error("🔴 **High Risk**: High likelihood of heart disease. Please consult a doctor immediately for a thorough evaluation.")
+    with res_col2:
+        st.markdown("#### Risk Assessment Details")
+        if risk_prob < 0.3:
+            st.info("🟢 **Low Risk**: No immediate concern. Keep maintaining a healthy lifestyle!")
+        elif risk_prob < 0.7:
+            st.warning("🟡 **Moderate Risk**: You have some risk factors. Consider consulting a doctor for a routine checkup.")
+        else:
+            st.error("🔴 **High Risk**: High likelihood of heart disease. Please consult a doctor immediately for a thorough evaluation.")
