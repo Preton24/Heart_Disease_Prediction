@@ -9,13 +9,16 @@ st.set_page_config(page_title="Heart Disease Prediction", page_icon="❤️", la
 
 st.markdown("""
 <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap');
+
     /* App background */
     .stApp {
-        background-color: #f8f9fa;
+        background-color: #fdf7f7;
+        font-family: 'Inter', sans-serif;
     }
     /* Custom button styling */
     div.stButton > button:first-child {
-        background-color: #e74c3c;
+        background-color: #800020;
         color: white;
         border-radius: 8px;
         transition: all 0.3s;
@@ -23,20 +26,25 @@ st.markdown("""
         font-weight: 600;
     }
     div.stButton > button:first-child:hover {
-        background-color: #c0392b;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        background-color: #5c0017;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         transform: translateY(-2px);
     }
     /* Headers */
-    h1, h2, h3 {
-        color: #2c3e50;
+    h1 {
+        color: #4a0e1b;
+        font-family: 'Playfair Display', serif !important;
+    }
+    h2, h3, h4, h5, h6 {
+        color: #4a0e1b;
+        font-family: 'Inter', sans-serif;
     }
     /* Cards */
     div[data-testid="stVerticalBlock"] > div[style*="flex-direction: column;"] > div[data-testid="stVerticalBlock"] {
         background-color: white;
         padding: 20px;
         border-radius: 10px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        box-shadow: 0 4px 6px rgba(128, 0, 32, 0.05);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -77,30 +85,32 @@ model.fit(X, y)
 # Streamlit UI
 # -----------------------------------
 
-st.title("❤️ Heart Disease Prediction System", anchor=False)
+header_col1, header_col2 = st.columns([10, 1])
 
-st.markdown("<p style='font-size: 1.2rem; color: #7f8c8d; font-weight: 500;'>HCAI-Based Healthcare Prediction for SDG 3</p>", unsafe_allow_html=True)
+with header_col1:
+    st.title("Heart Disease Prediction System", anchor=False)
+    st.markdown("<p style='font-size: 1.2rem; color: #7f8c8d; font-weight: 500;'>HCAI-Based Healthcare Prediction for SDG 3</p>", unsafe_allow_html=True)
+
+with header_col2:
+    st.markdown(
+        """
+        <div style="text-align: right; padding-top: 15px;">
+            <a href="https://docs.google.com/spreadsheets/d/1OMH70yg-iTh3Qe73MCsKzoc9ndNCEMadEgkBBWJ5C60/edit?usp=sharing" target="_blank" title="Preview Dataset" style="text-decoration: none; display: inline-block; text-align: center;">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Google_Sheets_logo_%282014-2020%29.svg" width="40" style="transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="font-size: 0.75rem; color: #7f8c8d; margin-top: 4px; font-weight: 500;">Dataset Preview</div>
+            </a>
+        </div>
+        """, 
+        unsafe_allow_html=True
+    )
+
 st.markdown("---")
 
 # -----------------------------------
 # User Inputs Setup
 # -----------------------------------
 
-# Initialize session state for inputs
-defaults = {
-    'age': 40,
-    'sex': "M",
-    'chest_pain': "ATA",
-    'resting_bp': 120,
-    'cholesterol': 200,
-    'fasting_bs': 0,
-    'max_hr': 150,
-    'exercise_angina': "N",
-    'oldpeak': 1.0
-}
-for k, v in defaults.items():
-    if k not in st.session_state:
-        st.session_state[k] = v
+# Session state initialization is handled automatically by Streamlit
 
 def load_demo_1():
     st.session_state.age = 65
@@ -124,6 +134,17 @@ def load_demo_2():
     st.session_state.exercise_angina = "N"
     st.session_state.oldpeak = 0.0
 
+def load_demo_3():
+    st.session_state.age = 55
+    st.session_state.sex = "M"
+    st.session_state.chest_pain = "NAP"
+    st.session_state.resting_bp = 135
+    st.session_state.cholesterol = 240
+    st.session_state.fasting_bs = 0
+    st.session_state.max_hr = 140
+    st.session_state.exercise_angina = "N"
+    st.session_state.oldpeak = 1.0
+
 col1, col2 = st.columns([2, 1])
 
 with col2:
@@ -131,50 +152,55 @@ with col2:
     st.write("Load realistic patient profiles:")
     st.button("Demo 1: High Risk Profile", on_click=load_demo_1, use_container_width=True)
     st.button("Demo 2: Low Risk Profile", on_click=load_demo_2, use_container_width=True)
+    st.button("Demo 3: Moderate Risk Profile", on_click=load_demo_3, use_container_width=True)
 
 with col1:
     st.subheader("Patient Details", anchor=False)
     # Use nested columns to make it look better
     c1, c2, c3 = st.columns(3)
     with c1:
-        age = st.number_input("Age", 1, 100, key="age")
-        resting_bp = st.number_input("Resting Blood Pressure", 50, 250, key="resting_bp")
-        max_hr = st.number_input("Maximum Heart Rate", 60, 250, key="max_hr")
+        age = st.number_input("Age", min_value=1, max_value=100, value=None, key="age")
+        resting_bp = st.number_input("Resting Blood Pressure", min_value=50, max_value=250, value=None, key="resting_bp")
+        max_hr = st.number_input("Maximum Heart Rate", min_value=60, max_value=250, value=None, key="max_hr")
     with c2:
-        sex = st.selectbox("Sex", ["M", "F"], key="sex")
-        cholesterol = st.number_input("Cholesterol", 50, 700, key="cholesterol")
-        exercise_angina = st.selectbox("Exercise Angina", ["Y", "N"], key="exercise_angina")
+        sex = st.selectbox("Sex", ["M", "F"], index=None, key="sex")
+        cholesterol = st.number_input("Cholesterol", min_value=50, max_value=700, value=None, key="cholesterol")
+        exercise_angina = st.selectbox("Exercise Angina", ["Y", "N"], index=None, key="exercise_angina")
     with c3:
-        chest_pain = st.selectbox("Chest Pain Type", ["ATA", "NAP", "ASY", "TA"], key="chest_pain")
-        fasting_bs = st.selectbox("Fasting Blood Sugar", [0, 1], key="fasting_bs")
-        oldpeak = st.number_input("Oldpeak", 0.0, 10.0, key="oldpeak")
+        chest_pain = st.selectbox("Chest Pain Type", ["ATA", "NAP", "ASY", "TA"], index=None, key="chest_pain")
+        fasting_bs = st.selectbox("Fasting Blood Sugar", [0, 1], index=None, key="fasting_bs")
+        oldpeak = st.number_input("Oldpeak", min_value=0.0, max_value=10.0, value=None, key="oldpeak")
 
 # -----------------------------------
-# Encode Inputs
+# Encode Inputs & Prediction
 # -----------------------------------
 
-sex_value = 1 if sex == "M" else 0
+    st.markdown("<br>", unsafe_allow_html=True)
+    _, btn_col = st.columns([5, 1])
+    with btn_col:
+        predict_clicked = st.button("Predict", use_container_width=True)
 
-cp_map = {
-    "ATA": 0,
-    "NAP": 1,
-    "ASY": 2,
-    "TA": 3
-}
+    if predict_clicked:
+        if None in [age, sex, chest_pain, resting_bp, cholesterol, fasting_bs, max_hr, exercise_angina, oldpeak]:
+            st.warning("⚠️ Please fill out all patient details before predicting.")
+            st.stop()
 
-chest_pain_value = cp_map[chest_pain]
+    sex_value = 1 if sex == "M" else 0
 
-exercise_value = 1 if exercise_angina == "Y" else 0
+    cp_map = {
+        "ASY": 0,
+        "ATA": 1,
+        "NAP": 2,
+        "TA": 3
+    }
 
-# Dummy/default values for remaining features
-resting_ecg = 1
-st_slope = 1
+    chest_pain_value = cp_map[chest_pain]
 
-# -----------------------------------
-# Prediction
-# -----------------------------------
+    exercise_value = 1 if exercise_angina == "Y" else 0
 
-if st.button("Predict"):
+    # Dummy/default values for remaining features
+    resting_ecg = 1
+    st_slope = 1
 
     input_data = pd.DataFrame([[
         age,
@@ -195,20 +221,20 @@ if st.button("Predict"):
     risk_prob = probabilities[0][1]
 
     st.markdown("---")
-    st.subheader("Prediction Results", anchor=False)
 
     res_col1, res_col2 = st.columns(2)
 
     with res_col1:
+        st.subheader("Prediction Results", anchor=False)
         if prediction[0] == 1:
-            st.error("### ⚠️ High Risk of Heart Disease")
+            st.error("**⚠️ High Risk of Heart Disease**")
         else:
-            st.success("### ✅ Low Risk of Heart Disease")
+            st.success("**✅ Low Risk of Heart Disease**")
         
         st.metric(label="Risk Probability", value=f"{risk_prob * 100:.1f}%")
 
     with res_col2:
-        st.markdown("#### Risk Assessment Details")
+        st.subheader("Risk Assessment Details", anchor=False)
         if risk_prob < 0.3:
             st.info("🟢 **Low Risk**: No immediate concern. Keep maintaining a healthy lifestyle!")
         elif risk_prob < 0.7:
